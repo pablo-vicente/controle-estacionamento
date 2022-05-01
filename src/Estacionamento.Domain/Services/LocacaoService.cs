@@ -51,23 +51,24 @@ public class LocacaoService : ILocacaoService
         
         var precoLocacao = CalcularValorLocacao(locacao, politicaPreco, periodosLivre);
         var (temDesconto, precoComDesconto) = CalculoLocacaoService.CalcularValorLocacaoComDesconto(precoLocacao, politicaPreco, condutor);
-        
-        if (temDesconto)
-        {
-            var qtdDesconto = condutor.DescontosUtilizados + 1;
-            if (qtdDesconto >= politicaPreco.QntDesconto)
-            {
-                condutor.SetDescontosUtilizados(0);
-                condutor.SetTempoEstacionado(TimeSpan.Zero);
-            }
-            
-        }
-        
+        AtualizarDescontosCondutor(temDesconto, politicaPreco, condutor);
+
         _locacaoRepository.Atualizar(locacao);
         _condutorRepository.Atualizar(condutor);
         _logger.LogInformation("Encerrando locação");
     }
-    
+
+    private static void AtualizarDescontosCondutor(bool temDesconto, PoliticaPreco politicaPreco, Condutor condutor)
+    {
+        if (!temDesconto) 
+            return;
+        
+        if (condutor.DescontosUtilizados + 1 < politicaPreco.QntDesconto) 
+            return;
+        condutor.SetDescontosUtilizados(0);
+        condutor.SetTempoEstacionado(TimeSpan.Zero);
+    }
+
     public static decimal CalcularValorLocacao(Locacao locacao, PoliticaPreco politicaPreco, params PeriodoLivre[] periodoLivres)
     {
         var tempoLivre = CalculoLocacaoService.CalcularTempoLivre(locacao, periodoLivres);
