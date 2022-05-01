@@ -31,19 +31,26 @@ public class PoliticaPrecoRepository : IPoliticaPrecoRepository
         await _estacionamentoDbContext.SaveChangesAsync();
     }
 
-    public IQueryable<PoliticaPreco> Listar()
+    public async Task<IEnumerable<PoliticaPreco>> ListarAsync()
     {
-        return _estacionamentoDbContext.PoliticasPrecos;
+        return await _estacionamentoDbContext.PoliticasPrecos.ToArrayAsync();
     }
 
-    public async Task<PoliticaPreco?> ObterByIdAsync(int id)
+    public async Task<PoliticaPreco> ObterByIdAsync(int id)
     {
-        return await _estacionamentoDbContext.PoliticasPrecos.FindAsync(id);
+        var politicaPreco = await _estacionamentoDbContext.PoliticasPrecos.FindAsync(id);
+        if (politicaPreco is null)
+            throw new ApplicationException($"Politica de Preco não encontrada ID: {id}");
+        return politicaPreco;
     }
 
-    public async Task<PoliticaPreco?> ObterByDataBaseAsync(DateTime dataBase)
+    public async Task<PoliticaPreco> ObterByDataBaseAsync(DateTime dataBase)
     {
-        return await _estacionamentoDbContext.PoliticasPrecos.FirstOrDefaultAsync(x=>x.DataBase == dataBase);
+        var politicaPreco = await _estacionamentoDbContext.PoliticasPrecos.FirstOrDefaultAsync(x=>x.DataBase == dataBase);
+        if (politicaPreco is null)
+            throw new ApplicationException($"Locação não encontrada DATA BASE:: {dataBase:dd/MM-yyyy}");
+
+        return politicaPreco;
     }
 
     public async Task<IEnumerable<PeriodoLivre>> ListarPeriodosLivresAsync(int politicaPrecoId)

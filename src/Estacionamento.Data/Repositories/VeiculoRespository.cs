@@ -31,18 +31,25 @@ public class VeiculoRespository : IVeiculoRepository
         await _estacionamentoDbContext.SaveChangesAsync();
     }
 
-    public IQueryable<Veiculo> Listar()
+    public async Task<IEnumerable<Veiculo>> ListarAsync()
     {
-        return _estacionamentoDbContext.Veiculos;
+        return await _estacionamentoDbContext.Veiculos.ToListAsync();
     }
 
-    public async Task<Veiculo?> ObterByIdAsync(int id)
+    public async Task<Veiculo> ObterByIdAsync(int id)
     {
-        return await _estacionamentoDbContext.Veiculos.FindAsync(id);
+        var veiculo = await _estacionamentoDbContext.Veiculos.FindAsync(id);
+        if (veiculo is null)
+            throw new ApplicationException($"Veiculo não encontrada ID: {id}");
+
+        return veiculo;
     }
 
-    public async Task<Veiculo?> ObterByPlacaAsync(string placa)
+    public async Task<Veiculo> ObterByPlacaAsync(string placa)
     {
-        return await _estacionamentoDbContext.Veiculos.FirstOrDefaultAsync(x=>x.Placa.Equals(placa, StringComparison.InvariantCultureIgnoreCase));
+        var veiculo = await _estacionamentoDbContext.Veiculos.FirstOrDefaultAsync(x=>x.Placa.Equals(placa, StringComparison.InvariantCultureIgnoreCase));
+        if (veiculo is null)
+            throw new ApplicationException($"Veiculo não encontrada PLACA: {placa}");
+        return veiculo;
     }
 }

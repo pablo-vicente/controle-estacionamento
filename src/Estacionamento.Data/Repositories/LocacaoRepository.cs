@@ -31,18 +31,17 @@ public class LocacaoRepository : ILocacaoRepository
         await _estacionamentoDbContext.SaveChangesAsync();
     }
 
-    public IQueryable<Locacao> Listar()
+    public async Task<IEnumerable<Locacao>> ListarAsync()
     {
-        return _estacionamentoDbContext.Locacoes.AsQueryable();
+        return await _estacionamentoDbContext.Locacoes.ToListAsync();
     }
 
-    public async Task<Locacao?> ObterByIdAsync(int id)
+    public async Task<Locacao> ObterByIdAsync(int id)
     {
-        return await _estacionamentoDbContext.Locacoes.FindAsync(id);
-    }
-
-    public async Task<Locacao?> ObterLocacaoVeiculoEmAbertoAsync(int veiculoId)
-    {
-        return await _estacionamentoDbContext.Locacoes.FirstOrDefaultAsync(x => x.VeiculoId == veiculoId);
+        var locacao = await _estacionamentoDbContext.Locacoes.FindAsync(id);
+        if (locacao is null)
+            throw new ApplicationException($"Locação não encontrada: {id}");
+        
+        return locacao;
     }
 }

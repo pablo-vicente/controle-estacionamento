@@ -1,30 +1,117 @@
 ﻿using System;
+using System.Collections.Generic;
+using Estacionamento.Core.Dtos;
 using Estacionamento.Data.Models;
 using Estacionamento.Domain.Services;
+using FluentAssertions;
 using Xunit;
 
 namespace Estacionamento.Domain.Tests.LocacaoServiceTests;
 
 public class CalcularValorLocacaoTests
 {
+    public static IEnumerable<object[]> Locacoes()
+    {
+        yield return new object[]
+        {
+            new Locacao(
+            new DateTime(2022, 01, 3, 10, 30, 0),
+            new DateTime(2022, 01,  3, 12, 00, 0),
+            1,
+            1),
+            new ResumoLocacaoResponse(
+                new TimeSpan(1, 30, 00),
+                new TimeSpan(0, 30, 0),
+                3,
+                50m,
+                2, 
+                false)
+        };
+        yield return new object[]
+        {
+            new Locacao(
+                new DateTime(2022, 01, 3, 12, 00, 0),
+                new DateTime(2022, 01,  3, 14, 00, 0),
+                1,
+                1),
+            new ResumoLocacaoResponse(
+                new TimeSpan(2, 0, 0),
+                new TimeSpan(1, 00, 0),
+                3,
+                50m,
+                2, 
+                false)
+        };
+        yield return new object[]
+        {
+            new Locacao(
+                new DateTime(2022, 01, 3, 11, 00, 0),
+                new DateTime(2022, 01,  3, 13, 30, 0),
+                1,
+                1),
+            new ResumoLocacaoResponse(
+                new TimeSpan(2, 30, 0),
+                new TimeSpan(1, 30, 0),
+                4,
+                50m,
+                2, 
+                false)
+        };
+        yield return new object[]
+        {
+            new Locacao(
+                new DateTime(2022, 01, 3, 12, 00, 0),
+                new DateTime(2022, 01,   3, 13, 00, 0),
+                1,
+                1),
+            new ResumoLocacaoResponse(
+                new TimeSpan(1, 0, 0),
+                new TimeSpan(1, 0, 0),
+                2,
+                50m,
+                0, 
+                false)
+        };
+        yield return new object[]
+        {
+            new Locacao(
+                new DateTime(2022, 01, 3, 10, 30, 0),
+                new DateTime(2022, 01,  4, 01, 00, 0),
+                1,
+                1),
+            new ResumoLocacaoResponse(
+                new TimeSpan(14, 30, 0),
+                new TimeSpan(1, 30, 0),
+                16,  //13h:30 + 1h
+                50m,
+                14, 
+                false)
+        };
+        yield return new object[]
+        {
+            new Locacao(
+                new DateTime(2022, 01, 3, 10, 30, 0),
+                new DateTime(2022, 01,  5, 01, 00, 0),
+                1,
+                1),
+            new ResumoLocacaoResponse(
+                new TimeSpan(1, 14, 30, 0),
+                new TimeSpan(1, 30, 0),
+                40, // 13h30m + 24h + 1h
+                50m,
+                38, 
+                false)
+        };
+    } 
+    
     [Theory]
-    [InlineData(3, 10, 30, 3, 12, 00, 2)]
-    [InlineData(3, 12, 00, 3, 14, 00, 2)]
-    [InlineData(3, 11, 00, 3, 13, 30, 2)]
-    [InlineData(3, 12, 00, 3, 13, 00, 0)]
-    [InlineData(3, 10, 30, 4, 01, 00, 14)]
-    [InlineData(3, 10, 30, 5, 01, 00, 38)]
+    [MemberData(nameof(Locacoes))]
     public void CalcularValorLocacao_PolitcaPrecosComPeriodoLivre_ValorLocaco(
-        int diaInicio, int horaInicio, int minutoInicio , 
-        int diaFim, int horaFim, int minutoFim,
-        decimal valorEsperado)
+        Locacao locacao,
+        ResumoLocacaoResponse locacaoResponseEsperado)
     {
         // Arrange
-        var locacao = new Locacao(
-            new DateTime(2022, 01, diaInicio, horaInicio, minutoInicio, 0),
-            new DateTime(2022, 01, diaFim, horaFim, minutoFim, 0),
-            1,
-            1);
+        var condutor = new Condutor();
         var politicaPreco = new PoliticaPreco(
             DateTime.Now,
             new DateTime(2022, 01, 01),
@@ -57,9 +144,9 @@ public class CalcularValorLocacaoTests
         };
         
         // Act
-        var valorLocacao = LocacaoService.CalcularValorLocacao(locacao, politicaPreco, periodosLivres);
+        var valorLocacao = LocacaoService.CalcularResumoLocacao(locacao, periodosLivres, politicaPreco, condutor);
     
         // Asset
-        Assert.Equal(valorEsperado, valorLocacao);
+        valorLocacao.Should().BeEquivalentTo(locacaoResponseEsperado);
     }
 }

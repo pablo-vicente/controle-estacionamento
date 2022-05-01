@@ -28,57 +28,85 @@ public class LocacaoService : ILocacaoService
         _locacaoRepository = locacaoRepository;
         _politicaPrecoRepository = politicaPrecoRepository;
     }
-    public void Registrar(LocacaoRequest request)
+    public async Task RegistrarAsync(LocacaoRequest request)
     {
-        var condutor = _condutorRepository.ObterByCpf(request.CpfCondutor);
-        var veiculo = _veiculoRepository.ObterByPlaca(request.PlacaVeiculo);
+        var condutor = await _condutorRepository.ObterByCpfAsync(request.CpfCondutor);
+        var veiculo = await _veiculoRepository.ObterByPlacaAsync(request.PlacaVeiculo);
+        var locacaoExistente = await _locacaoRepository.ListarAsync();
         
-        // TODO VALIDAR DUAS LOCAOCES ABERTAS PARA MESMO VEICULO
-        var locacao = new Locacao(DateTime.Now, null, veiculo.Id, condutor.Id);
-        _locacaoRepository.Adicionar(locacao);
+        if(locacaoExistente.Any(x => x.Status != Status.Fechado && x.VeiculoId == veiculo.Id))
+            throw new InvalidOperationException("Já existe uma locação aberta para este veiculo");
+        
+        var novaLocacao = new Locacao(DateTime.Now, null, veiculo.Id, condutor.Id);
+        await _locacaoRepository.AdicionarAsync(novaLocacao);
         _logger.LogInformation("Registrando locação");
     }
 
-    public void Encerrar(string placaVeiculo)
+    public async Task<ResumoLocacaoResponse> EncerrarAsync(string placaVeiculo)
     {
-        var locacao = _locacaoRepository.ObterLocacaoVeiculoEmAberto(placaVeiculo);
+        var veiculo = await _veiculoRepository.ObterByPlacaAsync(placaVeiculo);
+        var locacao = (await _locacaoRepository.ListarAsync())
+            .Where(x=>x.VeiculoId == veiculo.Id).
+            MaxBy(x => x.Inicio);
+            
+        if(locacao is null || locacao.Status is Status.Fechado)
+            throw new InvalidOperationException("Locação inexistente");
+        
         locacao.SetFim(DateTime.Now);
         locacao.SetStatus(Status.Fechado);
         
-        var politicaPreco = _politicaPrecoRepository.ObterByDataBase(locacao.Inicio);
-        var periodosLivre = (PeriodoLivre[])_politicaPrecoRepository.ListarPeriodosLivres(politicaPreco.Id);
-        var condutor = _condutorRepository.ObterById(locacao.CondutoId);
+        var politicaPreco = await _politicaPrecoRepository.ObterByDataBaseAsync(locacao.Inicio);
         
-        var precoLocacao = CalcularValorLocacao(locacao, politicaPreco, periodosLivre);
-        var (temDesconto, precoComDesconto) = CalculoLocacaoService.CalcularValorLocacaoComDesconto(precoLocacao, politicaPreco, condutor);
-        AtualizarDescontosCondutor(temDesconto, politicaPreco, condutor);
-
-        _locacaoRepository.Atualizar(locacao);
-        _condutorRepository.Atualizar(condutor);
+        if(politicaPreco is null)
+            throw new InvalidOperationException("Locação inexistente");
+        
+        var periodosLivres = (PeriodoLivre[]) await _politicaPrecoRepository.ListarPeriodosLivresAsync(politicaPreco.Id);
+        var condutor = await _condutorRepository.ObterByIdAsync(locacao.CondutorId);
+        
+        var resumoLocacao = CalcularResumoLocacao(locacao, periodosLivres, politicaPreco, condutor);
+        AtualizarDescontosCondutor(resumoLocacao.TemDesconto, resumoLocacao.TempoEstacionadoCobrado, politicaPreco, condutor);
+        
+        await _locacaoRepository.AtualizarAsync(locacao);
+        await _condutorRepository.AtualizarAsync(condutor);
         _logger.LogInformation("Encerrando locação");
+
+        return resumoLocacao;
     }
 
-    private static void AtualizarDescontosCondutor(bool temDesconto, PoliticaPreco politicaPreco, Condutor condutor)
+    public static ResumoLocacaoResponse CalcularResumoLocacao(
+        Locacao locacao, 
+        PeriodoLivre[] periodosLivres, 
+        PoliticaPreco politicaPreco,
+        Condutor condutor)
     {
-        if (!temDesconto) 
-            return;
+        var tempoLivre = CalculoLocacaoService.CalcularTempoLivre(locacao, periodosLivres);
+        var tempoEstacionado = CalcularTempoEstacionado(locacao);
+        var valorTotal = CalculoLocacaoService.CalcularValorSerPago(tempoEstacionado, politicaPreco);
+        var valorTotalSemLivre = CalculoLocacaoService.CalcularValorSerPago(tempoEstacionado - tempoLivre, politicaPreco);
+        var (temDesconto, valorComDesconto) = CalculoLocacaoService.CalcularValorLocacaoComDesconto(valorTotalSemLivre, politicaPreco, condutor);
         
-        if (condutor.DescontosUtilizados + 1 < politicaPreco.QntDesconto) 
+        return new ResumoLocacaoResponse(
+            tempoEstacionado,
+            tempoLivre,
+            valorTotal,
+            politicaPreco.TaxaDesconto,
+            valorComDesconto,
+            temDesconto);
+    }
+
+    private static void AtualizarDescontosCondutor(bool temDesconto, TimeSpan novoTempoEstacionado, PoliticaPreco politicaPreco, Condutor condutor)
+    {
+        if (!temDesconto || condutor.DescontosUtilizados + 1 < politicaPreco.QntDesconto)
+        {
+            var tempoEstacionado =  condutor.TempoEstacionado + novoTempoEstacionado;
+            condutor.SetTempoEstacionado(tempoEstacionado);
             return;
+        }
+        
         condutor.SetDescontosUtilizados(0);
         condutor.SetTempoEstacionado(TimeSpan.Zero);
     }
 
-    public static decimal CalcularValorLocacao(Locacao locacao, PoliticaPreco politicaPreco, params PeriodoLivre[] periodoLivres)
-    {
-        var tempoLivre = CalculoLocacaoService.CalcularTempoLivre(locacao, periodoLivres);
-        var tempoLocaco = locacao.Fim.Value - locacao.Inicio - tempoLivre;
-        var precoLocacaoAserPago = CalculoLocacaoService.CalcularValorSerPago(tempoLocaco, politicaPreco);
-        
-        return precoLocacaoAserPago;
-    }
-
-    
-
+    private static TimeSpan CalcularTempoEstacionado(Locacao locacao) => locacao.Fim.Value - locacao.Inicio;
     
 }

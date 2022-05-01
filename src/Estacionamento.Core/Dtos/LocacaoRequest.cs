@@ -1,7 +1,13 @@
 ﻿namespace Estacionamento.Core.Dtos;
 
-public class LocacaoRequest
+public struct LocacaoRequest
 {
-    public string PlacaVeiculo { get; set; }
-    public string CpfCondutor { get; set; }
+    public LocacaoRequest(string placaVeiculo, string cpfCondutor)
+    {
+        PlacaVeiculo = placaVeiculo;
+        CpfCondutor = cpfCondutor;
+    }
+
+    public string PlacaVeiculo { get; private set; }
+    public string CpfCondutor { get; private set; }
 }
