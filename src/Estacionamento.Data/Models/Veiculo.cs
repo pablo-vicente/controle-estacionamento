@@ -12,5 +12,10 @@ public class Veiculo
     public int Id { get; }
     public string Placa { get;}
     public int CondutorId { get; set; }
+
+    public void SetCondutorId(int condutorId)
+    {
+        CondutorId = condutorId;
+    }
     
 }
