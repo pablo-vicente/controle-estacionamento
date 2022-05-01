@@ -4,6 +4,6 @@ namespace Estacionamento.Data.Interfaces;
 
 public interface IPoliticaPrecoRepository : IRepository<PoliticaPreco>
 {
-    PoliticaPreco ObterByDataBase(DateTime dataBase);
-    IEnumerable<PeriodoLivre> ListarPeriodosLivres(int politicaPrecoId);
+    Task<PoliticaPreco?> ObterByDataBaseAsync(DateTime dataBase);
+    Task<IEnumerable<PeriodoLivre>> ListarPeriodosLivresAsync(int politicaPrecoId);
 }

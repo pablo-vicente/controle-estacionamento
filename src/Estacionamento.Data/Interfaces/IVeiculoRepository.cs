@@ -4,5 +4,5 @@ namespace Estacionamento.Data.Interfaces;
 
 public interface IVeiculoRepository : IRepository<Veiculo>
 {
-    Veiculo ObterByPlaca(string placa);
+    Task<Veiculo?> ObterByPlacaAsync(string placa);
 }

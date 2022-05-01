@@ -4,5 +4,5 @@ namespace Estacionamento.Data.Interfaces;
 
 public interface ICondutorRepository : IRepository<Condutor>
 {
-    Condutor ObterByCpf(string cpf);
+    Task<Condutor?> ObterByCpfAsync(string cpf);
 }

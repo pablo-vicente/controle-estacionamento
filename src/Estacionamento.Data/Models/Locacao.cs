@@ -6,13 +6,13 @@ public class Locacao
 {
     public Locacao() { } // EF core
 
-    public Locacao(DateTime inicio, DateTime? fim, int veiculoId, int condutoId)
+    public Locacao(DateTime inicio, DateTime? fim, int veiculoId, int condutorId)
     {
         Inicio = inicio;
         Fim = fim;
         Status = Status.EmAberto;
         VeiculoId = veiculoId;
-        CondutoId = condutoId;
+        CondutorId = condutorId;
     }
 
     public int Id { get; }
@@ -21,7 +21,7 @@ public class Locacao
     public DateTime? Fim { get; private set; }
 
     public int VeiculoId { get;}
-    public int CondutoId { get;}
+    public int CondutorId { get;}
 
     public Status Status { get; private set; }
     

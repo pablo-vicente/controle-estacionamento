@@ -1,47 +1,48 @@
 ﻿using Estacionamento.Data.Interfaces;
 using Estacionamento.Data.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace Estacionamento.Data.Repositories;
 
 public class LocacaoRepository : ILocacaoRepository
 {
-    public void Adicionar(params Locacao[] locacoes)
+    private readonly EstacionamentoDbContext _estacionamentoDbContext;
+
+    public LocacaoRepository(EstacionamentoDbContext estacionamentoDbContext)
     {
-        throw new NotImplementedException();
+        _estacionamentoDbContext = estacionamentoDbContext;
     }
 
-    public void Remover(params Locacao[] locacoes)
+    public async Task AdicionarAsync(params Locacao[] locacoes)
     {
-        throw new NotImplementedException();
+        await _estacionamentoDbContext.Locacoes.AddRangeAsync(locacoes);
+        await _estacionamentoDbContext.SaveChangesAsync();
     }
 
-    public void Atualizar(params Locacao[] locacoes)
+    public async Task RemoverAsync(params Locacao[] locacoes)
     {
-        throw new NotImplementedException();
+        _estacionamentoDbContext.Locacoes.RemoveRange(locacoes);
+        await _estacionamentoDbContext.SaveChangesAsync();
     }
 
-    public IEnumerable<Locacao> Listar()
+    public async Task AtualizarAsync(params Locacao[] locacoes)
     {
-        throw new NotImplementedException();
+        _estacionamentoDbContext.Locacoes.UpdateRange(locacoes);
+        await _estacionamentoDbContext.SaveChangesAsync();
     }
 
-    public Locacao ObterById(int id)
+    public IQueryable<Locacao> Listar()
     {
-        throw new NotImplementedException();
+        return _estacionamentoDbContext.Locacoes.AsQueryable();
     }
 
-    public IEnumerable<Locacao> ListarByPlacaVeiculo(string placaVeiculo)
+    public async Task<Locacao?> ObterByIdAsync(int id)
     {
-        throw new NotImplementedException();
+        return await _estacionamentoDbContext.Locacoes.FindAsync(id);
     }
 
-    public IEnumerable<Locacao> ListarByCpfCondutor(string cpfCondutor)
+    public async Task<Locacao?> ObterLocacaoVeiculoEmAbertoAsync(int veiculoId)
     {
-        throw new NotImplementedException();
-    }
-
-    public Locacao ObterLocacaoVeiculoEmAberto(string placaVeiculo)
-    {
-        throw new NotImplementedException();
+        return await _estacionamentoDbContext.Locacoes.FirstOrDefaultAsync(x => x.VeiculoId == veiculoId);
     }
 }

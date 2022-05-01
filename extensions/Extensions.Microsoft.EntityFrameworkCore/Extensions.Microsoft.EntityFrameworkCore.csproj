@@ -7,8 +7,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\extensions\Extensions.Microsoft.EntityFrameworkCore\Extensions.Microsoft.EntityFrameworkCore.csproj" />
-      <ProjectReference Include="..\Estacionamento.Core\Estacionamento.Core.csproj" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="6.0.4" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite.Core" Version="6.0.4" />
     </ItemGroup>
 
 </Project>

@@ -1,37 +1,48 @@
 ﻿using Estacionamento.Data.Interfaces;
 using Estacionamento.Data.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace Estacionamento.Data.Repositories;
 
 public class CondutorRepository: ICondutorRepository
 {
-    public void Adicionar(params Condutor[] codutor)
+    private readonly EstacionamentoDbContext _estacionamentoDbContext;
+
+    public CondutorRepository(EstacionamentoDbContext estacionamentoDbContext)
     {
-        throw new NotImplementedException();
+        _estacionamentoDbContext = estacionamentoDbContext;
     }
 
-    public void Remover(params Condutor[] codutor)
+    public async Task AdicionarAsync(params Condutor[] codutor)
     {
-        throw new NotImplementedException();
+        await _estacionamentoDbContext.Condutores.AddRangeAsync(codutor);
+        await _estacionamentoDbContext.SaveChangesAsync();
     }
 
-    public void Atualizar(params Condutor[] codutor)
+    public async Task RemoverAsync(params Condutor[] codutor)
     {
-        throw new NotImplementedException();
+        _estacionamentoDbContext.Condutores.RemoveRange(codutor);
+        await _estacionamentoDbContext.SaveChangesAsync();
     }
 
-    public IEnumerable<Condutor> Listar()
+    public async Task AtualizarAsync(params Condutor[] codutor)
     {
-        throw new NotImplementedException();
+        _estacionamentoDbContext.Condutores.UpdateRange(codutor);
+        await _estacionamentoDbContext.SaveChangesAsync();
     }
 
-    public Condutor ObterById(int id)
+    public IQueryable<Condutor> Listar()
     {
-        throw new NotImplementedException();
+        return _estacionamentoDbContext.Condutores;
     }
 
-    public Condutor ObterByCpf(string cpf)
+    public async Task<Condutor?> ObterByIdAsync(int id)
     {
-        throw new NotImplementedException();
+        return await _estacionamentoDbContext.Condutores.FindAsync(id) ?? null;
+    }
+
+    public async Task<Condutor?> ObterByCpfAsync(string cpf)
+    {
+        return await _estacionamentoDbContext.Condutores.FirstOrDefaultAsync(x=>x.Cpf.Equals(cpf));
     }
 }

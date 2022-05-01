@@ -1,37 +1,48 @@
 ﻿using Estacionamento.Data.Interfaces;
 using Estacionamento.Data.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace Estacionamento.Data.Repositories;
 
 public class VeiculoRespository : IVeiculoRepository
 {
-    public void Adicionar(params Veiculo[] veiculos)
+    private readonly EstacionamentoDbContext _estacionamentoDbContext;
+
+    public VeiculoRespository(EstacionamentoDbContext estacionamentoDbContext)
     {
-        throw new NotImplementedException();
+        _estacionamentoDbContext = estacionamentoDbContext;
     }
 
-    public void Remover(params Veiculo[] veiculos)
+    public async Task AdicionarAsync(params Veiculo[] veiculos)
     {
-        throw new NotImplementedException();
+        await _estacionamentoDbContext.Veiculos.AddRangeAsync(veiculos);
+        await _estacionamentoDbContext.SaveChangesAsync();
     }
 
-    public void Atualizar(params Veiculo[] veiculos)
+    public async Task RemoverAsync(params Veiculo[] veiculos)
     {
-        throw new NotImplementedException();
+        _estacionamentoDbContext.Veiculos.RemoveRange(veiculos);
+        await _estacionamentoDbContext.SaveChangesAsync();
     }
 
-    public IEnumerable<Veiculo> Listar()
+    public async Task AtualizarAsync(params Veiculo[] veiculos)
     {
-        throw new NotImplementedException();
+        _estacionamentoDbContext.Veiculos.UpdateRange(veiculos);
+        await _estacionamentoDbContext.SaveChangesAsync();
     }
 
-    public Veiculo ObterById(int id)
+    public IQueryable<Veiculo> Listar()
     {
-        throw new NotImplementedException();
+        return _estacionamentoDbContext.Veiculos;
     }
 
-    public Veiculo ObterByPlaca(string placa)
+    public async Task<Veiculo?> ObterByIdAsync(int id)
     {
-        throw new NotImplementedException();
+        return await _estacionamentoDbContext.Veiculos.FindAsync(id);
+    }
+
+    public async Task<Veiculo?> ObterByPlacaAsync(string placa)
+    {
+        return await _estacionamentoDbContext.Veiculos.FirstOrDefaultAsync(x=>x.Placa.Equals(placa, StringComparison.InvariantCultureIgnoreCase));
     }
 }

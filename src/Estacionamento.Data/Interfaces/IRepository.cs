@@ -1,10 +1,11 @@
-﻿namespace Estacionamento.Data.Interfaces;
+﻿
+namespace Estacionamento.Data.Interfaces;
 
 public interface IRepository<T>
 {
-    void Adicionar(params T[] t);
-    void Remover(params T[] t);
-    void Atualizar(params T[] t);
-    IEnumerable<T> Listar();
-    T ObterById(int id);
+    Task AdicionarAsync(params T[] t);
+    Task RemoverAsync(params T[] t);
+    Task AtualizarAsync(params T[] t);
+    IQueryable<T> Listar();
+    Task<T?> ObterByIdAsync(int id);
 }

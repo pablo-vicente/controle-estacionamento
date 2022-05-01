@@ -1,42 +1,53 @@
 ﻿using Estacionamento.Data.Interfaces;
 using Estacionamento.Data.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace Estacionamento.Data.Repositories;
 
 public class PoliticaPrecoRepository : IPoliticaPrecoRepository
 {
-    public void Adicionar(params PoliticaPreco[] t)
+    private readonly EstacionamentoDbContext _estacionamentoDbContext;
+
+    public PoliticaPrecoRepository(EstacionamentoDbContext estacionamentoDbContext)
     {
-        throw new NotImplementedException();
+        _estacionamentoDbContext = estacionamentoDbContext;
     }
 
-    public void Remover(params PoliticaPreco[] t)
+    public async Task AdicionarAsync(params PoliticaPreco[] politicaPrecos)
     {
-        throw new NotImplementedException();
+        await _estacionamentoDbContext.PoliticasPrecos.AddRangeAsync(politicaPrecos);
+        await _estacionamentoDbContext.SaveChangesAsync();
     }
 
-    public void Atualizar(params PoliticaPreco[] t)
+    public async Task RemoverAsync(params PoliticaPreco[] politicaPrecos)
     {
-        throw new NotImplementedException();
+        _estacionamentoDbContext.PoliticasPrecos.RemoveRange(politicaPrecos);
+        await _estacionamentoDbContext.SaveChangesAsync();
     }
 
-    public IEnumerable<PoliticaPreco> Listar()
+    public async Task AtualizarAsync(params PoliticaPreco[] politicaPrecos)
     {
-        throw new NotImplementedException();
+        _estacionamentoDbContext.PoliticasPrecos.UpdateRange(politicaPrecos);
+        await _estacionamentoDbContext.SaveChangesAsync();
     }
 
-    public PoliticaPreco ObterById(int id)
+    public IQueryable<PoliticaPreco> Listar()
     {
-        throw new NotImplementedException();
+        return _estacionamentoDbContext.PoliticasPrecos;
     }
 
-    public PoliticaPreco ObterByDataBase(DateTime dataBase)
+    public async Task<PoliticaPreco?> ObterByIdAsync(int id)
     {
-        throw new NotImplementedException();
+        return await _estacionamentoDbContext.PoliticasPrecos.FindAsync(id);
     }
 
-    public IEnumerable<PeriodoLivre> ListarPeriodosLivres(int politicaPrecoId)
+    public async Task<PoliticaPreco?> ObterByDataBaseAsync(DateTime dataBase)
     {
-        throw new NotImplementedException();
+        return await _estacionamentoDbContext.PoliticasPrecos.FirstOrDefaultAsync(x=>x.DataBase == dataBase);
+    }
+
+    public async Task<IEnumerable<PeriodoLivre>> ListarPeriodosLivresAsync(int politicaPrecoId)
+    {
+        return await _estacionamentoDbContext.PeriodosLivres.Where(x=>x.PoliticaPrecoId == politicaPrecoId).ToListAsync();
     }
 }
