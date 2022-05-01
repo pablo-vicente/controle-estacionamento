@@ -3,6 +3,7 @@ using Estacionamento.Application.Services;
 using Estacionamento.Data;
 using Estacionamento.Domain.Interfaces;
 using Estacionamento.Domain.Services;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,6 +22,8 @@ builder.Services.AddScoped<IVeiculoService, VeiculoService>();
 builder.Services.AddScoped<IPoliticaPrecoService, PoliticaPrecoService>();
 
 builder.Services.AddDbContext<EstacionamentoDbContext>();
+
+
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -43,3 +46,7 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+using var scope = app.Services.CreateScope();
+var db = scope.ServiceProvider.GetService<EstacionamentoDbContext>();
+db.Database.Migrate();
