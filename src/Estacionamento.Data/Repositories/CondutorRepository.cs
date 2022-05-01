@@ -31,18 +31,24 @@ public class CondutorRepository: ICondutorRepository
         await _estacionamentoDbContext.SaveChangesAsync();
     }
 
-    public IQueryable<Condutor> Listar()
+    public async Task<IEnumerable<Condutor>> ListarAsync()
     {
-        return _estacionamentoDbContext.Condutores;
+        return await _estacionamentoDbContext.Condutores.ToListAsync();
     }
 
-    public async Task<Condutor?> ObterByIdAsync(int id)
+    public async Task<Condutor> ObterByIdAsync(int id)
     {
-        return await _estacionamentoDbContext.Condutores.FindAsync(id) ?? null;
+        var condutor = await _estacionamentoDbContext.Condutores.FindAsync(id);
+        if (condutor is null)
+            throw new ApplicationException($"Codutor não encontrado: {id}");
+        
+        return condutor;
     }
 
     public async Task<Condutor?> ObterByCpfAsync(string cpf)
     {
-        return await _estacionamentoDbContext.Condutores.FirstOrDefaultAsync(x=>x.Cpf.Equals(cpf));
+        return await _estacionamentoDbContext
+            .Condutores
+            .FirstOrDefaultAsync(x => x.Cpf.Equals(cpf, StringComparison.InvariantCultureIgnoreCase));;
     }
 }

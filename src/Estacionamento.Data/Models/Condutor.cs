@@ -14,8 +14,8 @@ public class Condutor
     }
 
     public int Id { get;}
-    public string Nome { get; }
-    public string Email { get; }
+    public string Nome { get; private set; }
+    public string Email { get; private set; }
     public string Cpf { get; }
     public int DescontosUtilizados { get; private set; }
 
@@ -23,4 +23,14 @@ public class Condutor
     
     public void SetDescontosUtilizados(int descontos) => DescontosUtilizados = descontos;
     public void SetTempoEstacionado(TimeSpan tempoEstacionado) => TempoEstacionado += tempoEstacionado;
+
+    public void SetNome(string nome)
+    {
+        Nome = nome;
+    }
+    
+    public void SetEmail(string email)
+    {
+        Email = email;
+    }
 }
