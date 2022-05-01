@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Estacionamento.Api.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/[controller]/[action]")]
     [ApiController]
     public class VeiculoController : BaseController
     {
@@ -15,6 +15,7 @@ namespace Estacionamento.Api.Controllers
             _logger = logger;
             _veiculoAppService = veiculoAppService;
         }
+        [HttpPost]
         public async Task<ActionResult> Criar([FromBody]VeiculoRequest request)
         {
             try
@@ -27,7 +28,7 @@ namespace Estacionamento.Api.Controllers
                 return BadRequest(TratarException(ex, _logger));
             }
         }
-        
+        [HttpPost]
         public async Task<ActionResult> Editar([FromBody]VeiculoRequest request)
         {
             try

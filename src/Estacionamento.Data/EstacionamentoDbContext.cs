@@ -7,6 +7,8 @@ namespace Estacionamento.Data;
 
 public class EstacionamentoDbContext : DbContext
 {
+    public EstacionamentoDbContext(DbContextOptions<EstacionamentoDbContext> options) : base(options) { }
+    
     public DbSet<Condutor> Condutores { get; set; }
     public DbSet<Veiculo> Veiculos { get; set; }
     public DbSet<Locacao> Locacoes { get; set; }
@@ -44,7 +46,7 @@ public class EstacionamentoDbContext : DbContext
         modelBuilder.Entity<PeriodoLivre>(entity =>
         {
             entity.HasKey(e => e.Id);
-            entity.HasOne<PoliticaPreco>(nameof(PeriodoLivre.PoliticaPrecoId));
+            entity.HasOne<PoliticaPreco>().WithMany(x=>x.PeriodosLivres);
         });
         
         modelBuilder.Entity<PoliticaPreco>(entity =>
@@ -58,14 +60,11 @@ public class EstacionamentoDbContext : DbContext
         modelBuilder.Entity<Veiculo>(entity =>
         {
             entity.HasKey(e => e.Id);
-            entity.HasOne<Condutor>(nameof(Veiculo.CondutorId));
         });
         
         modelBuilder.Entity<Locacao>(entity =>
         {
             entity.HasKey(e => e.Id);
-            entity.HasOne<Condutor>(nameof(Locacao.CondutorId));
-            entity.HasOne<Veiculo>(nameof(Locacao.VeiculoId));
             
             entity.Property(x => x.Inicio).HasColumnType("datetime");
             entity.Property(x => x.Fim).HasColumnType("datetime");

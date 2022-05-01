@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Estacionamento.Api.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/politica-preco/[action]")]
     [ApiController]
     public class PoliticaPrecoController : BaseController
     {
@@ -15,6 +15,7 @@ namespace Estacionamento.Api.Controllers
             _logger = logger;
             _politicaPrecoAppService = politicaPrecoAppService;
         }
+        [HttpPost]
         public async Task<ActionResult> Criar([FromBody]PoliticaPrecoRequest request)
         {
             try

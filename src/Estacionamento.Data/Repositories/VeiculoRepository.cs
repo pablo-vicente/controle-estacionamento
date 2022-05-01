@@ -4,11 +4,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Estacionamento.Data.Repositories;
 
-public class VeiculoRespository : IVeiculoRepository
+public class VeiculoRepository : IVeiculoRepository
 {
     private readonly EstacionamentoDbContext _estacionamentoDbContext;
 
-    public VeiculoRespository(EstacionamentoDbContext estacionamentoDbContext)
+    public VeiculoRepository(EstacionamentoDbContext estacionamentoDbContext)
     {
         _estacionamentoDbContext = estacionamentoDbContext;
     }

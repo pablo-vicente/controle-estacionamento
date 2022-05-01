@@ -8,7 +8,7 @@ namespace Estacionamento.Api.Controllers
     [ApiController]
     public class BaseController : ControllerBase
     {
-        public string TratarException(Exception ex, ILogger logger)
+        private protected string TratarException(Exception ex, ILogger logger)
         {
             switch (ex)
             {
