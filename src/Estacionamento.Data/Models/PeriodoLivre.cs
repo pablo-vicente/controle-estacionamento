@@ -4,12 +4,11 @@ public class PeriodoLivre
 {
     public PeriodoLivre() { } // EF core
 
-    public PeriodoLivre(DayOfWeek diaSemana, TimeSpan inicio, TimeSpan fim, int politicaPrecoId)
+    public PeriodoLivre(DayOfWeek diaSemana, TimeSpan inicio, TimeSpan fim)
     {
         DiaSemana = diaSemana;
         Inicio = inicio;
         Fim = fim;
-        PoliticaPrecoId = politicaPrecoId;
     }
 
     public int Id { get; private set; }
@@ -17,5 +16,5 @@ public class PeriodoLivre
     public TimeSpan Inicio { get;}
     public TimeSpan Fim { get;}
 
-    public int PoliticaPrecoId { get; set; }
+    public int PoliticaPrecoId { get; }
 }

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Estacionamento.Data.Models;
 using Estacionamento.Domain.Services;
 using Xunit;
@@ -30,7 +31,8 @@ public class CalcularValorSerPagoTests
             10,
             10,
             50,
-            2);
+            2,
+            new List<PeriodoLivre>());
         
         // Act
         var valorLocacao = CalculoLocacaoService.CalcularValorSerPago(tempoLocacao, politicaPreco);

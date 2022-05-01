@@ -38,7 +38,11 @@ public class PoliticaPrecoRepository : IPoliticaPrecoRepository
 
     public async Task<PoliticaPreco> ObterByIdAsync(int id)
     {
-        var politicaPreco = await _estacionamentoDbContext.PoliticasPrecos.FindAsync(id);
+        var politicaPreco = await _estacionamentoDbContext
+            .PoliticasPrecos
+            .Include(x => x.PeriodosLivres)
+            .FirstOrDefaultAsync(x => x.Id == id);
+        
         if (politicaPreco is null)
             throw new ApplicationException($"Politica de Preco não encontrada ID: {id}");
         return politicaPreco;
@@ -46,15 +50,13 @@ public class PoliticaPrecoRepository : IPoliticaPrecoRepository
 
     public async Task<PoliticaPreco> ObterByDataBaseAsync(DateTime dataBase)
     {
-        var politicaPreco = await _estacionamentoDbContext.PoliticasPrecos.FirstOrDefaultAsync(x=>x.DataBase == dataBase);
+        var politicaPreco = await _estacionamentoDbContext
+            .PoliticasPrecos
+            .Include(x=>x.PeriodosLivres)
+            .FirstOrDefaultAsync(x=>x.DataBase == dataBase);
         if (politicaPreco is null)
             throw new ApplicationException($"Locação não encontrada DATA BASE:: {dataBase:dd/MM-yyyy}");
 
         return politicaPreco;
-    }
-
-    public async Task<IEnumerable<PeriodoLivre>> ListarPeriodosLivresAsync(int politicaPrecoId)
-    {
-        return await _estacionamentoDbContext.PeriodosLivres.Where(x=>x.PoliticaPrecoId == politicaPrecoId).ToListAsync();
     }
 }

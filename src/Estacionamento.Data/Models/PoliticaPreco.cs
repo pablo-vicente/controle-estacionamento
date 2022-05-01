@@ -5,10 +5,18 @@ public class PoliticaPreco
     public PoliticaPreco() { } // EF core
     
 
-    public PoliticaPreco(DateTime dataBase, DateTime inicioVigencia, DateTime fimVigencia, 
-        decimal valorHora, decimal valorAdicionalHora, decimal tempoMinimo, 
+    public PoliticaPreco(
+        DateTime dataBase, 
+        DateTime inicioVigencia, 
+        DateTime fimVigencia, 
+        decimal valorHora, 
+        decimal valorAdicionalHora, 
+        decimal tempoMinimo, 
         int tolerancia, 
-        int horasDesconto, int taxaDesconto, int qntDesconto)
+        int horasDesconto, 
+        int taxaDesconto, 
+        int qntLocacoesDesconto,
+        IEnumerable<PeriodoLivre> periodosLivres)
     {
         DataBase = dataBase;
         InicioVigencia = inicioVigencia;
@@ -19,7 +27,8 @@ public class PoliticaPreco
         Tolerancia = tolerancia;
         HorasDesconto = horasDesconto;
         TaxaDesconto = taxaDesconto;
-        QntDesconto = qntDesconto;
+        QntLocacoesDesconto = qntLocacoesDesconto;
+        PeriodosLivres = periodosLivres;
     }
 
     public int Id { get;}
@@ -48,8 +57,10 @@ public class PoliticaPreco
     /// </summary>
     public int Tolerancia { get; }
 
-    public int HorasDesconto { get; set; }
-    public int TaxaDesconto { get; set; }
-    public int QntDesconto { get; set; }
-    
+    public int HorasDesconto { get;}
+    public int TaxaDesconto { get;}
+    public int QntLocacoesDesconto { get;}
+
+    public IEnumerable<PeriodoLivre> PeriodosLivres { get; }
+
 }

@@ -31,18 +31,15 @@ public class CalcularTempoLivreTests
             new(
                 DayOfWeek.Monday,
                 new TimeSpan(11, 30, 0),
-                new TimeSpan(13, 00, 00),
-                1),
+                new TimeSpan(13, 00, 00)),
             new(
                 DayOfWeek.Wednesday,
                 new TimeSpan(11, 30, 0),
-                new TimeSpan(13, 00, 00),
-                1),
+                new TimeSpan(13, 00, 00)),
             new(
                 DayOfWeek.Thursday,
                 new TimeSpan(11, 30, 0),
-                new TimeSpan(13, 00, 00),
-                1)
+                new TimeSpan(13, 00, 00))
         };
         
         // Act

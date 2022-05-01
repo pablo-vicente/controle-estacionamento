@@ -112,6 +112,23 @@ public class CalcularValorLocacaoTests
     {
         // Arrange
         var condutor = new Condutor();
+        
+        var periodosLivres = new PeriodoLivre[]
+        {
+            new(
+                DayOfWeek.Monday,
+                new TimeSpan(11, 30, 0),
+                new TimeSpan(13, 00, 00)),
+            new(
+                DayOfWeek.Wednesday,
+                new TimeSpan(11, 30, 0),
+                new TimeSpan(13, 00, 00)),
+            new(
+                DayOfWeek.Thursday,
+                new TimeSpan(11, 30, 0),
+                new TimeSpan(13, 00, 00))
+        };
+        
         var politicaPreco = new PoliticaPreco(
             DateTime.Now,
             new DateTime(2022, 01, 01),
@@ -122,29 +139,11 @@ public class CalcularValorLocacaoTests
             10,
             10,
             50,
-            2);
-    
-        var periodosLivres = new PeriodoLivre[]
-        {
-            new(
-                DayOfWeek.Monday,
-                new TimeSpan(11, 30, 0),
-                new TimeSpan(13, 00, 00),
-                1),
-            new(
-                DayOfWeek.Wednesday,
-                new TimeSpan(11, 30, 0),
-                new TimeSpan(13, 00, 00),
-                1),
-            new(
-                DayOfWeek.Thursday,
-                new TimeSpan(11, 30, 0),
-                new TimeSpan(13, 00, 00),
-                1)
-        };
+            2,
+            periodosLivres);
         
         // Act
-        var valorLocacao = LocacaoService.CalcularResumoLocacao(locacao, periodosLivres, politicaPreco, condutor);
+        var valorLocacao = LocacaoService.CalcularResumoLocacao(locacao, politicaPreco, condutor);
     
         // Asset
         valorLocacao.Should().BeEquivalentTo(locacaoResponseEsperado);

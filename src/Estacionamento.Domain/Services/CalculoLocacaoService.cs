@@ -32,7 +32,7 @@ public static class CalculoLocacaoService
         return precoLocacaoAserPago;
     }
     
-    public static TimeSpan CalcularTempoLivre(Locacao locacao, params PeriodoLivre[] periodoLivres)
+    public static TimeSpan CalcularTempoLivre(Locacao locacao, IEnumerable<PeriodoLivre> periodoLivres)
     {
         var intervalos = new HashSet<(DateTime, DateTime)>();
         
@@ -57,7 +57,7 @@ public static class CalculoLocacaoService
         return tempoLivre;
     }
 
-    private static TimeSpan CalcularHorasLivresIntervalos(HashSet<(DateTime, DateTime)> intervalos, params PeriodoLivre[] periodoLivres)
+    private static TimeSpan CalcularHorasLivresIntervalos(HashSet<(DateTime, DateTime)> intervalos, IEnumerable<PeriodoLivre> periodoLivres)
     {
         var horas = 0;
         var minutos = 0;
@@ -121,6 +121,6 @@ public static class CalculoLocacaoService
         if (condutor.TempoEstacionado.TotalHours < politicaPreco.HorasDesconto)
             return false;
 
-        return condutor.DescontosUtilizados < politicaPreco.QntDesconto;
+        return condutor.DescontosUtilizados < politicaPreco.QntLocacoesDesconto;
     }
 }

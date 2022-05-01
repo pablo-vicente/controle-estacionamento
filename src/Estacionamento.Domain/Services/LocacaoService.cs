@@ -70,10 +70,9 @@ public class LocacaoService : ILocacaoService
         if(politicaPreco is null)
             throw new InvalidOperationException("Locação inexistente");
         
-        var periodosLivres = (PeriodoLivre[]) await _politicaPrecoRepository.ListarPeriodosLivresAsync(politicaPreco.Id);
         var condutor = await _condutorRepository.ObterByIdAsync(locacao.CondutorId);
         
-        var resumoLocacao = CalcularResumoLocacao(locacao, periodosLivres, politicaPreco, condutor);
+        var resumoLocacao = CalcularResumoLocacao(locacao, politicaPreco, condutor);
         AtualizarDescontosCondutor(resumoLocacao.TemDesconto, resumoLocacao.TempoEstacionadoCobrado, politicaPreco, condutor);
         
         await _locacaoRepository.AtualizarAsync(locacao);
@@ -85,11 +84,10 @@ public class LocacaoService : ILocacaoService
 
     public static ResumoLocacaoResponse CalcularResumoLocacao(
         Locacao locacao, 
-        PeriodoLivre[] periodosLivres, 
         PoliticaPreco politicaPreco,
         Condutor condutor)
     {
-        var tempoLivre = CalculoLocacaoService.CalcularTempoLivre(locacao, periodosLivres);
+        var tempoLivre = CalculoLocacaoService.CalcularTempoLivre(locacao, politicaPreco.PeriodosLivres);
         var tempoEstacionado = CalcularTempoEstacionado(locacao);
         var valorTotal = CalculoLocacaoService.CalcularValorSerPago(tempoEstacionado, politicaPreco);
         var valorTotalSemLivre = CalculoLocacaoService.CalcularValorSerPago(tempoEstacionado - tempoLivre, politicaPreco);
@@ -106,7 +104,7 @@ public class LocacaoService : ILocacaoService
 
     private static void AtualizarDescontosCondutor(bool temDesconto, TimeSpan novoTempoEstacionado, PoliticaPreco politicaPreco, Condutor condutor)
     {
-        if (!temDesconto || condutor.DescontosUtilizados + 1 < politicaPreco.QntDesconto)
+        if (!temDesconto || condutor.DescontosUtilizados + 1 < politicaPreco.QntLocacoesDesconto)
         {
             var tempoEstacionado =  condutor.TempoEstacionado + novoTempoEstacionado;
             condutor.SetTempoEstacionado(tempoEstacionado);

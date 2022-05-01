@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Estacionamento.Data.Models;
 using Estacionamento.Domain.Services;
 using Xunit;
@@ -31,7 +32,8 @@ public class CalcularDescontoTests
             10,
             10,
             50,
-            2);
+            2,
+            new List<PeriodoLivre>());
         
         var tempoEstacionado = new TimeSpan(horaEstacionada, minutosEstacionados, 0);
         var condutor = new Condutor(
