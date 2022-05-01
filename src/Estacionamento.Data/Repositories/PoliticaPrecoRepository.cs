@@ -53,7 +53,10 @@ public class PoliticaPrecoRepository : IPoliticaPrecoRepository
         var politicaPreco = await _estacionamentoDbContext
             .PoliticasPrecos
             .Include(x=>x.PeriodosLivres)
-            .FirstOrDefaultAsync(x=>x.DataBase == dataBase);
+            .OrderBy(x=>x.DataBase)
+            .Where(x=>x.DataBase <= dataBase)
+            .LastOrDefaultAsync();
+        
         if (politicaPreco is null)
             throw new ApplicationException($"Locação não encontrada DATA BASE:: {dataBase:dd/MM-yyyy}");
 
