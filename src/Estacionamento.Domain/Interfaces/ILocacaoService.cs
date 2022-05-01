@@ -4,6 +4,6 @@ namespace Estacionamento.Domain.Interfaces;
 
 public interface ILocacaoService
 {
-    Task RegistrarAsync(LocacaoRequest request);
-    Task<ResumoLocacaoResponse> EncerrarAsync(string placaVeiculo);
+    Task CriarLocacaoAsync(LocacaoRequest request);
+    Task<ResumoLocacaoResponse> EncerrarLocacaoAsync(string placaVeiculo);
 }

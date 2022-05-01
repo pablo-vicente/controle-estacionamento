@@ -28,9 +28,12 @@ public class LocacaoService : ILocacaoService
         _locacaoRepository = locacaoRepository;
         _politicaPrecoRepository = politicaPrecoRepository;
     }
-    public async Task RegistrarAsync(LocacaoRequest request)
+    public async Task CriarLocacaoAsync(LocacaoRequest request)
     {
         var condutor = await _condutorRepository.ObterByCpfAsync(request.CpfCondutor);
+        if (condutor is null)
+            throw new ApplicationException($"Codutor não encontrado: {request.CpfCondutor}");
+        
         var veiculo = await _veiculoRepository.ObterByPlacaAsync(request.PlacaVeiculo);
         var locacaoExistente = await _locacaoRepository.ListarAsync();
         
@@ -42,7 +45,7 @@ public class LocacaoService : ILocacaoService
         _logger.LogInformation("Registrando locação");
     }
 
-    public async Task<ResumoLocacaoResponse> EncerrarAsync(string placaVeiculo)
+    public async Task<ResumoLocacaoResponse> EncerrarLocacaoAsync(string placaVeiculo)
     {
         var veiculo = await _veiculoRepository.ObterByPlacaAsync(placaVeiculo);
         var locacao = (await _locacaoRepository.ListarAsync())

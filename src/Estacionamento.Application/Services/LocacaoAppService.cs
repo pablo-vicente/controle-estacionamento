@@ -16,6 +16,6 @@ public class LocacaoAppService : ILocacaoAppService
     }
     public void Registrar(LocacaoRequest locacao)
     {
-        _locacaoService.RegistrarAsync(locacao);
+        _locacaoService.CriarLocacaoAsync(locacao);
     }
 }
