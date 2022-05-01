@@ -4,5 +4,6 @@ namespace Estacionamento.Application.Interfaces;
 
 public interface ILocacaoAppService
 {
-    void Registrar(LocacaoRequest locacao);
+    Task CriarLocacao(LocacaoRequest locacao);
+    Task EncerrarrLocacao(string placaVeiculo);
 }

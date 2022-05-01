@@ -6,20 +6,20 @@ namespace Estacionamento.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class LocacaoController : BaseController
+    public class CondutorController : BaseController
     {
-        private readonly ILogger<LocacaoController> _logger;
-        private readonly ILocacaoAppService _locacaoAppService;
-        public LocacaoController(ILogger<LocacaoController> logger, ILocacaoAppService locacaoAppService)
+        private readonly ILogger<CondutorController> _logger;
+        private readonly ICondutorAppService _condutorAppService;
+        public CondutorController(ILogger<CondutorController> logger, ICondutorAppService condutorAppService)
         {
             _logger = logger;
-            _locacaoAppService = locacaoAppService;
+            _condutorAppService = condutorAppService;
         }
-        public async Task<ActionResult> Criar([FromBody]LocacaoRequest locacao)
+        public async Task<ActionResult> Criar([FromBody]CondutorRequest request)
         {
             try
             {
-                await _locacaoAppService.CriarLocacao(locacao);
+                await _condutorAppService.CriarCodutor(request);
                 return Ok();
             }
             catch (Exception ex)
@@ -28,11 +28,11 @@ namespace Estacionamento.Api.Controllers
             }
         }
         
-        public async Task<ActionResult> Encerrar([FromBody]string placaVeiculo)
+        public async Task<ActionResult> Editar([FromBody]CondutorRequest request)
         {
             try
             {
-                await _locacaoAppService.EncerrarrLocacao(placaVeiculo);
+                await _condutorAppService.EditarCodutor(request);
                 return Ok();
             }
             catch (Exception ex)
