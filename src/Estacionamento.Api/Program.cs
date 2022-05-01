@@ -1,3 +1,4 @@
+using System.Reflection;
 using Estacionamento.Application.Interfaces;
 using Estacionamento.Application.Services;
 using Estacionamento.Data;
@@ -21,9 +22,15 @@ builder.Services.AddScoped<ICondutorService, CondutorService>();
 builder.Services.AddScoped<IVeiculoService, VeiculoService>();
 builder.Services.AddScoped<IPoliticaPrecoService, PoliticaPrecoService>();
 
-builder.Services.AddDbContext<EstacionamentoDbContext>();
 
-
+builder.Services.AddDbContext<EstacionamentoDbContext>(options =>
+{
+    var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+    options.UseSqlite(connectionString, options =>
+    {
+        options.MigrationsAssembly(Assembly.GetExecutingAssembly().FullName);
+    });
+});
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

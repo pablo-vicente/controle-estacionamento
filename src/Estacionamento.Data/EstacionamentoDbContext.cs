@@ -1,24 +1,33 @@
 ﻿using System.Reflection;
 using Estacionamento.Data.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 namespace Estacionamento.Data;
 
 public class EstacionamentoDbContext : DbContext
 {
     public DbSet<Condutor> Condutores { get; set; }
-    public DbSet<PeriodoLivre> PeriodosLivres { get; set; }
     public DbSet<Veiculo> Veiculos { get; set; }
     public DbSet<Locacao> Locacoes { get; set; }
     public DbSet<PoliticaPreco> PoliticasPrecos { get; set; }
     
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        // TODO PEGAR JSON CONFIG
-        optionsBuilder.UseSqlite("Filename=Estacionamento.db", options =>
+        if (!optionsBuilder.IsConfigured)
         {
-            options.MigrationsAssembly(Assembly.GetExecutingAssembly().FullName);
-        });
+            var configuration = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json")
+                .Build();
+        
+            var connectionString = configuration.GetConnectionString("DefaultConnection");
+            optionsBuilder.UseSqlite(connectionString, options =>
+            {
+                options.MigrationsAssembly(Assembly.GetExecutingAssembly().FullName);
+            });
+        }
+       
         base.OnConfiguring(optionsBuilder);
     }
     

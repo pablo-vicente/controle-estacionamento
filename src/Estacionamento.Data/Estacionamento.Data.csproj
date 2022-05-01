@@ -8,6 +8,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\extensions\Extensions.Microsoft.EntityFrameworkCore\Extensions.Microsoft.EntityFrameworkCore.csproj" />
+        <ProjectReference Include="..\..\extensions\Extensions.Microsoft.Extensions.Configuration.Json\Extensions.Microsoft.Extensions.Configuration.Json.csproj" />
       <ProjectReference Include="..\Estacionamento.Core\Estacionamento.Core.csproj" />
     </ItemGroup>
 
