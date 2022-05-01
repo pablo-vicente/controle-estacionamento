@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\extensions\Extensions.Microsoft.Extensions.Logging\Extensions.Microsoft.Extensions.Logging.csproj" />
+      <ProjectReference Include="..\Estacionamento.Core\Estacionamento.Core.csproj" />
+      <ProjectReference Include="..\Estacionamento.Data\Estacionamento.Data.csproj" />
+    </ItemGroup>
+
+</Project>
