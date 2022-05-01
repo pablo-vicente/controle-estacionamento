@@ -30,11 +30,15 @@ public class LocacaoService : ILocacaoService
     }
     public async Task CriarLocacaoAsync(LocacaoRequest request)
     {
-        var condutor = await _condutorRepository.ObterByCpfAsync(request.CpfCondutor);
+        var cpf = CondutorService.FormatarCpf(request.CpfCondutor);
+        var condutor = await _condutorRepository.ObterByCpfAsync(cpf);
         if (condutor is null)
-            throw new ApplicationException($"Codutor não encontrado: {request.CpfCondutor}");
+            throw new ApplicationException($"Codutor não encontrado: {cpf}");
         
-        var veiculo = await _veiculoRepository.ObterByPlacaAsync(request.PlacaVeiculo);
+        var veiculo = await _veiculoRepository.ObterByPlacaAsync(request.PlacaVeiculo.Trim());
+        if (veiculo is null)
+            throw new ApplicationException($"Veiculo não encontrada PLACA: {request.PlacaVeiculo.Trim()}");
+        
         var locacaoExistente = await _locacaoRepository.ListarAsync();
         
         if(locacaoExistente.Any(x => x.Status != Status.Fechado && x.VeiculoId == veiculo.Id))
@@ -48,6 +52,9 @@ public class LocacaoService : ILocacaoService
     public async Task<ResumoLocacaoResponse> EncerrarLocacaoAsync(string placaVeiculo)
     {
         var veiculo = await _veiculoRepository.ObterByPlacaAsync(placaVeiculo);
+        if (veiculo is null)
+            throw new ApplicationException($"Veiculo não encontrada PLACA: {placaVeiculo}");
+        
         var locacao = (await _locacaoRepository.ListarAsync())
             .Where(x=>x.VeiculoId == veiculo.Id).
             MaxBy(x => x.Inicio);

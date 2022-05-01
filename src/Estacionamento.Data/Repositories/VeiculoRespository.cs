@@ -45,11 +45,8 @@ public class VeiculoRespository : IVeiculoRepository
         return veiculo;
     }
 
-    public async Task<Veiculo> ObterByPlacaAsync(string placa)
+    public async Task<Veiculo?> ObterByPlacaAsync(string placa)
     {
-        var veiculo = await _estacionamentoDbContext.Veiculos.FirstOrDefaultAsync(x=>x.Placa.Equals(placa, StringComparison.InvariantCultureIgnoreCase));
-        if (veiculo is null)
-            throw new ApplicationException($"Veiculo não encontrada PLACA: {placa}");
-        return veiculo;
+        return await _estacionamentoDbContext.Veiculos.FirstOrDefaultAsync(x=>x.Placa.Equals(placa, StringComparison.InvariantCultureIgnoreCase));;
     }
 }
