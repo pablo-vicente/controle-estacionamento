@@ -24,10 +24,7 @@ public class EstacionamentoDbContext : DbContext
                 .Build();
         
             var connectionString = configuration.GetConnectionString("DefaultConnection");
-            optionsBuilder.UseSqlite(connectionString, options =>
-            {
-                options.MigrationsAssembly(Assembly.GetExecutingAssembly().FullName);
-            });
+            optionsBuilder.UseSqlite(connectionString);
         }
        
         base.OnConfiguring(optionsBuilder);
@@ -46,7 +43,9 @@ public class EstacionamentoDbContext : DbContext
         modelBuilder.Entity<PeriodoLivre>(entity =>
         {
             entity.HasKey(e => e.Id);
-            entity.HasOne<PoliticaPreco>().WithMany(x=>x.PeriodosLivres);
+            entity
+                .HasOne(bc => bc.PoliticaPreco)
+                .WithMany(b => b.PeriodosLivres);
         });
         
         modelBuilder.Entity<PoliticaPreco>(entity =>

@@ -16,5 +16,5 @@ public class PeriodoLivre
     public TimeSpan Inicio { get;}
     public TimeSpan Fim { get;}
 
-    public int PoliticaPrecoId { get; }
+    public virtual PoliticaPreco PoliticaPreco{ get; }
 }

@@ -32,10 +32,7 @@ builder.Services.AddScoped<IPoliticaPrecoRepository, PoliticaPrecoRepository>();
 builder.Services.AddDbContext<EstacionamentoDbContext>(options =>
 {
     var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-    options.UseSqlite(connectionString, options =>
-    {
-        options.MigrationsAssembly(Assembly.GetExecutingAssembly().FullName);
-    });
+    options.UseSqlite(connectionString);
 });
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
